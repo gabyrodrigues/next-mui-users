@@ -1,4 +1,4 @@
-import { SyntheticEvent, useEffect, useRef, useState } from "react";
+import { SyntheticEvent, useContext, useEffect, useRef, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Autocomplete, Box, Button, CircularProgress, Stack, TextField } from "@mui/material";
@@ -6,20 +6,15 @@ import * as z from "zod";
 
 import { formSchema } from "./schema";
 import { Person } from "@entities/Person";
-
-function sleep(duration: number): Promise<void> {
-  return new Promise<void>((resolve) => {
-    setTimeout(() => {
-      resolve();
-    }, duration);
-  });
-}
+import { UserContext } from "@contexts/User";
 
 export function FormNewUser() {
   const [phone, setPhone] = useState("");
   const [person, setPerson] = useState<Person | null>(null);
   const [open, setOpen] = useState(false);
   const [options, setOptions] = useState<readonly Person[]>([]);
+
+  const { people, handleLoadPeople } = useContext(UserContext);
 
   const submitRef = useRef<HTMLButtonElement | null>(null);
   const loading = open && options.length === 0;
@@ -34,7 +29,7 @@ export function FormNewUser() {
   } = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      pessoa: 1,
+      pessoa: 0,
       telefone: "",
       email: ""
     }
@@ -48,24 +43,17 @@ export function FormNewUser() {
     }
 
     (async () => {
-      await sleep(1e3);
+      await handleLoadPeople();
 
       if (active) {
-        setOptions([
-          ...[
-            {
-              id: 1,
-              nome: "Random Name"
-            }
-          ]
-        ]);
+        setOptions([...people]);
       }
     })();
 
     return () => {
       active = false;
     };
-  }, [loading]);
+  }, [loading, people, handleLoadPeople]);
 
   useEffect(() => {
     if (!open) {
@@ -79,7 +67,7 @@ export function FormNewUser() {
     }
 
     try {
-      console.log("Produto cadastrado com sucesso!", values);
+      console.log("Usuário cadastrado com sucesso!", values);
       reset();
       setPhone("");
     } catch (error) {
@@ -92,7 +80,7 @@ export function FormNewUser() {
     }
   }
 
-  console.log(getValues("email"), getValues("pessoa"), getValues("telefone"));
+  console.log(getValues("pessoa"), getValues("telefone"), getValues("email"));
 
   return (
     <Box py={2}>

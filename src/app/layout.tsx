@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
+
 import ThemeRegistry from "@theme/ThemeRegistry";
+import UserContextProvider from "@contexts/User/provider";
 import { Menu } from "@components/Menu";
 
 export const metadata: Metadata = {
@@ -17,8 +19,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="en">
       <body>
-        <Menu />
-        <ThemeRegistry>{children}</ThemeRegistry>
+        <UserContextProvider>
+          <Menu />
+          <ThemeRegistry>{children}</ThemeRegistry>
+        </UserContextProvider>
       </body>
     </html>
   );
