@@ -1,0 +1,21 @@
+  {
+    "name": "Next MUI Users",
+    "short_name": "Next Users",
+    "icons": [
+      {
+        "src": "/img/icon-192.png",
+        "type": "image/png",
+        "sizes": "192x192"
+      },
+      {
+        "src": "/img/icon-512.png",
+        "type": "image/png",
+        "sizes": "512x512"
+      }
+    ],
+    "background_color": "#06092B",
+    "description": "A simple Users Register developed with Typescript, React, NextJS and Tailwind CSS",
+    "display": "fullscreen",
+    "start_url": "/",
+    "theme_color": "#06092B"
+  }
