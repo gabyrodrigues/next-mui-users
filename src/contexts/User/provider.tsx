@@ -10,24 +10,38 @@ interface UserContextProviderProps {
 }
 
 export default function UserContextProvider(props: UserContextProviderProps) {
-  const [people, setPeople] = useState<Person[]>([]);
   const [person, setPerson] = useState<Person | null>(null);
 
-  async function handleLoadPeople() {
+  async function handleLoadPeople(): Promise<Person[]> {
     try {
       const response = await api.get("/pessoas");
 
-      setPeople(response.data);
+      return response.data;
     } catch (error) {
-      console.log(error);
+      console.error(error);
+      return [];
+    }
+  }
+
+  async function handleSearchPeople(search: string): Promise<Person[]> {
+    try {
+      const people = await handleLoadPeople();
+
+      const filteredPeople = search
+        ? people.filter((item: Person) => item.nome.toLowerCase().includes(search.toLowerCase()))
+        : [];
+      return filteredPeople;
+    } catch (error) {
+      console.error(error);
+      return [];
     }
   }
 
   const values = {
-    people,
     person,
     setPerson,
-    handleLoadPeople
+    handleLoadPeople,
+    handleSearchPeople
   };
 
   return <UserContext.Provider value={values}>{props.children}</UserContext.Provider>;

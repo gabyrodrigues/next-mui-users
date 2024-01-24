@@ -40,7 +40,7 @@ export function FormNewUser() {
     } catch (error) {
       setOpenSnackbar(true);
       setFeedbackMessage("Aconteceu algum problema! Tente novamente mais tarde.");
-      console.log(error);
+      console.error(error);
     }
 
     if (submitRef.current) {

@@ -1,6 +1,15 @@
-import { Dispatch, SetStateAction, SyntheticEvent, useContext, useEffect, useState } from "react";
+import {
+  Dispatch,
+  SetStateAction,
+  SyntheticEvent,
+  useContext,
+  useEffect,
+  useMemo,
+  useRef,
+  useState
+} from "react";
 import { Controller, FieldValues, useFormContext } from "react-hook-form";
-import { Autocomplete, CircularProgress, TextField } from "@mui/material";
+import { Autocomplete, TextField, debounce } from "@mui/material";
 
 import { Person } from "@entities/Person";
 import { UserContext } from "@contexts/User";
@@ -18,38 +27,44 @@ export function AutocompleteField({
   fieldValue,
   setFieldValue
 }: AutocompleteFieldProps) {
-  const [open, setOpen] = useState(false);
   const [options, setOptions] = useState<readonly Person[]>([]);
-
+  const [inputValue, setInputValue] = useState("");
   const { control, setValue } = useFormContext<FieldValues>();
-  const { people, handleLoadPeople } = useContext(UserContext);
-  const loading = open && options.length === 0;
+  const { handleSearchPeople } = useContext(UserContext);
+
+  const searchRequestRef = useRef<any>(null);
+  const activeRef = useRef(true);
+
+  const searchPeopleDelayed = useMemo(
+    () =>
+      debounce(async (search: string) => {
+        if (!activeRef.current) return;
+
+        const results = await handleSearchPeople(search);
+        searchRequestRef.current = search.trim();
+        setOptions(results || []);
+      }, 400),
+    [handleSearchPeople]
+  );
 
   useEffect(() => {
-    let active = true;
+    activeRef.current = true;
 
-    if (!loading) {
-      return undefined;
+    if (inputValue === "") {
+      setOptions(fieldValue ? [fieldValue] : []);
+      return () => {
+        activeRef.current = false;
+      };
     }
 
-    (async () => {
-      await handleLoadPeople();
-
-      if (active) {
-        setOptions([...people]);
-      }
-    })();
+    if (inputValue.trim() !== searchRequestRef.current) {
+      searchPeopleDelayed(inputValue.trim());
+    }
 
     return () => {
-      active = false;
+      activeRef.current = false;
     };
-  }, [loading, people, handleLoadPeople]);
-
-  useEffect(() => {
-    if (!open) {
-      setOptions([]);
-    }
-  }, [open]);
+  }, [fieldValue, inputValue, searchPeopleDelayed]);
 
   return (
     <Controller
@@ -58,47 +73,31 @@ export function AutocompleteField({
       render={({ fieldState }) => (
         <Autocomplete
           id={name}
-          open={open}
-          onOpen={() => {
-            setOpen(true);
-          }}
-          onClose={() => {
-            setOpen(false);
-          }}
-          autoComplete
-          loadingText="Carregando itens..."
-          isOptionEqualToValue={(option, value) => option?.nome === value?.nome}
           getOptionLabel={(option) => option?.nome || ""}
+          filterOptions={(x) => x}
           options={options}
-          loading={loading}
-          renderInput={(params) => (
-            <TextField
-              {...params}
-              label={label}
-              InputProps={{
-                ...params.InputProps,
-                endAdornment: (
-                  <>
-                    {loading ? (
-                      <CircularProgress
-                        color="inherit"
-                        size={20}
-                      />
-                    ) : null}
-                    {params.InputProps.endAdornment}
-                  </>
-                )
-              }}
-              error={!!fieldState.error}
-              helperText={fieldState.error ? fieldState.error.message : null}
-            />
-          )}
+          autoComplete
+          includeInputInList
+          filterSelectedOptions
           value={fieldValue}
+          noOptionsText={options.length ? "" : "Realize uma busca"}
           onChange={(event: SyntheticEvent<Element, Event>, newValue: Person | null) => {
             setOptions(newValue ? [newValue, ...options] : options);
             setValue(name, newValue ? +newValue.id : 0);
             setFieldValue(newValue ?? null);
           }}
+          onInputChange={(event, newInputValue) => {
+            setInputValue(newInputValue);
+          }}
+          isOptionEqualToValue={(option, value) => option?.nome === value?.nome}
+          renderInput={(params) => (
+            <TextField
+              {...params}
+              label={label}
+              error={!!fieldState.error}
+              helperText={fieldState.error ? fieldState.error.message : null}
+            />
+          )}
         />
       )}
     />
