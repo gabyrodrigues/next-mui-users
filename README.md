@@ -27,12 +27,12 @@ npm i
 npm run dev
 ```
 
-3. Também rode ao mesmo tempo o simulador de servidor de API:
+3. Também execute ao mesmo tempo o simulador de servidor de API:
 ```bash
 npm run server
 ```
 
-3. Além disso, também é possível gerar uma build:
+3. Além disso, é possível gerar uma build:
    
 ```bash
 npm run build
@@ -53,4 +53,5 @@ Acesse [http://localhost:3000](http://localhost:3000) no navegador para visualiz
   - Nome;
   - Telefone;
   -  Email;
+ 
   O formulário possui todas as validações necessárias dos campos a partir da biblioteca [Zod](https://zod.dev/) mas na atual versão ainda não há uma conexão com um banco de dados para salvar os dados, ficando como implementação futura, assim como a listagem desses dados cadastrados e mais validações.
