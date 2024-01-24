@@ -1,20 +1,19 @@
-import { useRef, useState } from "react";
-import { Controller, FormProvider, useForm } from "react-hook-form";
+import { useRef, useState, useContext } from "react";
+import { FormProvider, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Box, Button, Snackbar, Stack, TextField } from "@mui/material";
+import { Box, Button, Snackbar, Stack } from "@mui/material";
 import * as z from "zod";
 
+import { UserContext } from "@contexts/User";
 import { formSchema } from "./schema";
-import { maskPhone } from "@utils";
-import { AutocompleteField } from "@components/AutocompleteField";
-import { Person } from "@entities/Person";
+import { FormFields } from "./FormFields";
 
 export function FormNewUser() {
   const [openSnackbar, setOpenSnackbar] = useState(false);
-  const [person, setPerson] = useState<Person | null>(null);
   const [feedbackMessage, setFeedbackMessage] = useState<string | null>(null);
 
   const submitRef = useRef<HTMLButtonElement | null>(null);
+  const { setPerson } = useContext(UserContext);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -24,7 +23,7 @@ export function FormNewUser() {
       email: ""
     }
   });
-  const { control, formState, handleSubmit, reset } = form;
+  const { formState, handleSubmit, reset } = form;
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     if (submitRef.current) {
@@ -58,42 +57,7 @@ export function FormNewUser() {
           <Stack
             spacing={2}
             p={4}>
-            <AutocompleteField
-              name="pessoa"
-              label="Pessoa"
-              fieldValue={person}
-              setFieldValue={setPerson}
-            />
-
-            <Controller
-              name="telefone"
-              control={control}
-              render={({ field, fieldState }) => (
-                <TextField
-                  label="Telefone"
-                  error={!!fieldState.error}
-                  helperText={fieldState.error ? fieldState.error.message : null}
-                  value={field.value}
-                  onChange={(event) => {
-                    const formattedValue = maskPhone(event.target.value);
-                    field.onChange(formattedValue);
-                  }}
-                />
-              )}
-            />
-
-            <Controller
-              name="email"
-              control={control}
-              render={({ field, fieldState }) => (
-                <TextField
-                  {...field}
-                  label="E-mail"
-                  error={!!fieldState.error}
-                  helperText={fieldState.error ? fieldState.error.message : null}
-                />
-              )}
-            />
+            <FormFields />
 
             <Button
               disabled={!formState.isValid}

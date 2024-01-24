@@ -18,6 +18,7 @@ export function Menu() {
       }}>
       <Box
         maxWidth="lg"
+        px={3}
         width="100%">
         <Link href="/">
           <Image

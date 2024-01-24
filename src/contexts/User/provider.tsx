@@ -11,6 +11,7 @@ interface UserContextProviderProps {
 
 export default function UserContextProvider(props: UserContextProviderProps) {
   const [people, setPeople] = useState<Person[]>([]);
+  const [person, setPerson] = useState<Person | null>(null);
 
   async function handleLoadPeople() {
     try {
@@ -24,6 +25,8 @@ export default function UserContextProvider(props: UserContextProviderProps) {
 
   const values = {
     people,
+    person,
+    setPerson,
     handleLoadPeople
   };
 
