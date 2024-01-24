@@ -14,7 +14,7 @@
       }
     ],
     "background_color": "#06092B",
-    "description": "A simple Users Register developed with Typescript, React, NextJS and Tailwind CSS",
+    "description": "Um simples registro de usuários desenvolvido com Typescript, NextJS, React Hook Form e MUI",
     "display": "fullscreen",
     "start_url": "/",
     "theme_color": "#06092B"

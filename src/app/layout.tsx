@@ -6,7 +6,8 @@ import { Menu } from "@components/Menu";
 
 export const metadata: Metadata = {
   title: "Next MUI Users",
-  description: "Um simples registro de usuários desenvolvido com Typescript, React, NextJS e MUI",
+  description:
+    "Um simples registro de usuários desenvolvido com Typescript, NextJS, React Hook Form e MUI",
   icons: {
     icon: "/img/favicon.ico",
     shortcut: "/img/icon-512.png",
