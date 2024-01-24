@@ -1,39 +1,43 @@
 import { SyntheticEvent, useContext, useEffect, useRef, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Autocomplete, Box, Button, CircularProgress, Stack, TextField } from "@mui/material";
+import {
+  Autocomplete,
+  Box,
+  Button,
+  CircularProgress,
+  Snackbar,
+  Stack,
+  TextField
+} from "@mui/material";
 import * as z from "zod";
 
 import { formSchema } from "./schema";
 import { Person } from "@entities/Person";
 import { UserContext } from "@contexts/User";
+import { maskPhone } from "@utils";
 
 export function FormNewUser() {
-  const [phone, setPhone] = useState("");
   const [person, setPerson] = useState<Person | null>(null);
-  const [open, setOpen] = useState(false);
+  const [openOptions, setOpenOptions] = useState(false);
   const [options, setOptions] = useState<readonly Person[]>([]);
+  const [feedbackMessage, setFeedbackMessage] = useState<string | null>(null);
 
   const { people, handleLoadPeople } = useContext(UserContext);
 
   const submitRef = useRef<HTMLButtonElement | null>(null);
-  const loading = open && options.length === 0;
+  const loading = openOptions && options.length === 0;
 
-  const {
-    control,
-    handleSubmit,
-    reset,
-    setValue,
-    getValues,
-    formState: { errors }
-  } = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
-    defaultValues: {
-      pessoa: 0,
-      telefone: "",
-      email: ""
+  const { control, formState, handleSubmit, reset, setValue } = useForm<z.infer<typeof formSchema>>(
+    {
+      resolver: zodResolver(formSchema),
+      defaultValues: {
+        pessoa: 0,
+        telefone: "",
+        email: ""
+      }
     }
-  });
+  );
 
   useEffect(() => {
     let active = true;
@@ -56,10 +60,10 @@ export function FormNewUser() {
   }, [loading, people, handleLoadPeople]);
 
   useEffect(() => {
-    if (!open) {
+    if (!openOptions) {
       setOptions([]);
     }
-  }, [open]);
+  }, [openOptions]);
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     if (submitRef.current) {
@@ -67,20 +71,19 @@ export function FormNewUser() {
     }
 
     try {
-      console.log("Usuário cadastrado com sucesso!", values);
+      setFeedbackMessage("Usuário cadastrado com sucesso!");
+      console.log("Dados cadastrados", values);
       reset();
-      setPhone("");
+      setPerson(null);
     } catch (error) {
       console.log(error);
-      console.log("Aconteceu algum problema!", "Tente novamente mais tarde.");
+      setFeedbackMessage("Aconteceu algum problema! Tente novamente mais tarde.");
     }
 
     if (submitRef.current) {
       submitRef.current.disabled = false;
     }
   }
-
-  console.log(getValues("pessoa"), getValues("telefone"), getValues("email"));
 
   return (
     <Box py={2}>
@@ -93,17 +96,18 @@ export function FormNewUser() {
           <Controller
             name="pessoa"
             control={control}
-            render={() => (
+            render={({ fieldState }) => (
               <Autocomplete
                 id="pessoa"
-                open={open}
+                open={openOptions}
                 onOpen={() => {
-                  setOpen(true);
+                  setOpenOptions(true);
                 }}
                 onClose={() => {
-                  setOpen(false);
+                  setOpenOptions(false);
                 }}
                 autoComplete
+                loadingText="Carregando usuários..."
                 isOptionEqualToValue={(option, value) => option.nome === value.nome}
                 getOptionLabel={(option) => option.nome}
                 options={options}
@@ -126,11 +130,12 @@ export function FormNewUser() {
                         </>
                       )
                     }}
+                    error={!!fieldState.error}
+                    helperText={fieldState.error ? fieldState.error.message : null}
                   />
                 )}
                 value={person}
                 onChange={(event: SyntheticEvent<Element, Event>, newValue: Person | null) => {
-                  console.log("change autocomplete", event, newValue);
                   setOptions(newValue ? [newValue, ...options] : options);
                   setPerson(newValue ?? null);
                   setValue("pessoa", newValue ? newValue.id : 0);
@@ -138,38 +143,39 @@ export function FormNewUser() {
               />
             )}
           />
-          {errors.pessoa && <span>{errors.pessoa.message}</span>}
 
           <Controller
             name="telefone"
             control={control}
-            render={() => (
+            render={({ field, fieldState }) => (
               <TextField
                 label="Telefone"
-                value={phone}
+                error={!!fieldState.error}
+                helperText={fieldState.error ? fieldState.error.message : null}
+                value={field.value}
                 onChange={(event) => {
-                  setPhone(event.target.value);
-                  setValue("telefone", event.target.value);
+                  const formattedValue = maskPhone(event.target.value);
+                  field.onChange(formattedValue);
                 }}
               />
             )}
           />
-          {errors.telefone && <span>{errors.telefone.message}</span>}
 
           <Controller
             name="email"
             control={control}
-            render={({ field }) => (
+            render={({ field, fieldState }) => (
               <TextField
-                label="E-mail"
                 {...field}
+                label="E-mail"
+                error={!!fieldState.error}
+                helperText={fieldState.error ? fieldState.error.message : null}
               />
             )}
           />
-          {errors.email && <span>{errors.email.message}</span>}
 
           <Button
-            disabled={!getValues("pessoa") || !getValues("telefone") || !getValues("email")}
+            disabled={!formState.isValid}
             variant="contained"
             ref={submitRef}
             type="submit">
@@ -177,6 +183,15 @@ export function FormNewUser() {
           </Button>
         </Stack>
       </form>
+
+      {!!feedbackMessage && (
+        <Snackbar
+          open={!!feedbackMessage}
+          message={feedbackMessage}
+          anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
+          autoHideDuration={3000}
+        />
+      )}
     </Box>
   );
 }
