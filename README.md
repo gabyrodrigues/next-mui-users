@@ -1,58 +1,56 @@
-![React Avançado](https://raw.githubusercontent.com/React-Avancado/boilerplate/master/public/img/logo-gh.svg)
+# 📝 Projeto Next MUI Users
 
-This is a [Next.js](https://nextjs.org/) boilerplate to be used in a course called [React Avançado](https://reactavancado.com.br/).
-![ci](https://github.com/gabyrodrigues/boilerplate-apps-router/workflows/ci/badge.svg)
+Este projeto tem o objetivo de cadastro de usuários a partir do Next JS utilizando a biblioteca Material UI e React Hook Form.
 
-## What is inside?
-
-This project uses lot of stuff as:
+## 👩‍💻 Tecnologias
 
 - [TypeScript](https://www.typescriptlang.org/)
 - [NextJS](https://nextjs.org/)
-- [Styled Components](https://styled-components.com/)
-- [Jest](https://jestjs.io/)
-- [React Testing Library](https://testing-library.com/docs/react-testing-library/intro)
-- [Storybook](https://storybook.js.org/)
+- [Material UI](https://mui.com/material-ui)
+- [React Hook Form](https://react-hook-form.com/)
+- [Json Server](https://www.npmjs.com/package/json-server)
 - [Eslint](https://eslint.org/)
 - [Prettier](https://prettier.io/)
-- [Husky](https://github.com/typicode/husky)
+- [Zod](https://zod.dev/)
 
-## Getting Started
 
-First, run the development server:
+## 💻 Inicializando o projeto
+
+1. Para instalar o projeto localmente, é necessário instalar todos os pacotes de dependências com o comando:
 
 ```bash
-npm run dev
-# or
-yarn dev
+npm i
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+2. Suba o servidor local com:
+```bash
+npm run dev
+```
 
-You can start editing the page by modifying `pages/index.js`. The page auto-updates as you edit the file.
+3. Também rode ao mesmo tempo o simulador de servidor de API:
+```bash
+npm run server
+```
 
-## Commands
+3. Além disso, também é possível gerar uma build:
+   
+```bash
+npm run build
+```
 
-- `dev`: runs your application on `localhost:3000`
-- `build`: creates the production build version
-- `start`: starts a simple server with the build production code
-- `lint`: runs the linter in all components and pages
-- `test`: runs jest to test all components and pages
-- `test:watch`: runs jest in watch mode
-- `storybook`: runs storybook on `localhost:6006`
-- `build-storybook`: create storybook build version
+Acesse [http://localhost:3000](http://localhost:3000) no navegador para visualizar o projeto.
 
-## Learn More
+### 🚀 Comandos
 
-To learn more about Next.js, take a look at the following resources:
+- `dev`:  executa o projeto em `localhost:3000`
+- `server`:  executa o simulador de servidor de API
+- `build`: gera uma versão build do projeto
+- `start`: inicia um servidor simples com o código de compilação de produção
+- `lint`: executa o linter em todos os componentes e páginas
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/import?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+### 💠 Rotas do projeto
+- `/`:  página inicial onde os usuários podem ser cadastrados, inserindo:
+  - Nome;
+  - Telefone;
+  -  Email;
+  O formulário possui todas as validações necessárias dos campos a partir da biblioteca [Zod](https://zod.dev/) mas na atual versão ainda não há uma conexão com um banco de dados para salvar os dados, ficando como implementação futura, assim como a listagem desses dados cadastrados e mais validações.
