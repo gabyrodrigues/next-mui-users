@@ -21,6 +21,7 @@
     "@types/react-dom": "18.2.7",
     "axios": "^1.6.5",
     "eslint-config-next": "13.4.19",
+    "json-server": "^1.0.0-alpha.22",
     "next": "13.4.19",
     "react": "18.2.0",
     "react-dom": "18.2.0",
