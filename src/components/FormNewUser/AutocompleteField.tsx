@@ -96,8 +96,8 @@ export function AutocompleteField({
           value={fieldValue}
           onChange={(event: SyntheticEvent<Element, Event>, newValue: Person | null) => {
             setOptions(newValue ? [newValue, ...options] : options);
+            setValue(name, newValue ? +newValue.id : 0);
             setFieldValue(newValue ?? null);
-            setValue(name, newValue ? newValue.id : 0);
           }}
         />
       )}
